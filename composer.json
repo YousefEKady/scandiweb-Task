@@ -1,0 +1,12 @@
+{
+    "name": "youssef/scandiweb-task",
+    "description": "Scandiweb Task",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Youssef\\ScandiwebTask\\": "src/"
+        }
+    },
+    "require": {}
+}
