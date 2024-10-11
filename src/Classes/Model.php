@@ -17,7 +17,18 @@ abstract class Model
     // Fetch All
     public function fetchAll()
     {
-        $runQuery = $this->conn->query("SELECT * FROM $this->table");
+        $query = "SELECT products.sku, products.name, products.price, products.type,dvd.size, 
+            furniture.height, furniture.width, furniture.length, 
+            book.weight
+        FROM products
+        LEFT JOIN dvd ON products.sku = dvd.sku
+        LEFT JOIN furniture ON products.sku = furniture.sku
+        LEFT JOIN book ON products.sku = book.sku
+    ";
+
+        $runQuery = $this->conn->prepare($query);
+        $runQuery->execute();
         return $runQuery->fetchAll(PDO::FETCH_ASSOC);
     }
+
 }

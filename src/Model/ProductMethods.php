@@ -8,7 +8,7 @@ class ProductMethods extends Model
     public function fetchAll()
     {
         $this->setTableName();
-        return parent::fetchAll(); // Call the parent fetchAll method
+        return parent::fetchAll();
     }
 
     public function setTableName()
@@ -24,18 +24,50 @@ class ProductMethods extends Model
         return $count === 0;
     }
 
-    public function createProduct($sku, $name, $price, $type, $size, $weight, $height, $width, $length)
+    // Insert into Product Table
+    public function createProduct($sku, $name, $price, $type, $size = null, $height = null, $width = null, $length = null, $weight = null)
     {
-        $runQuery = $this->conn->prepare("INSERT INTO $this->table (sku, name, price, type, size, weight, height, width, length) VALUES (:sku, :name, :price, :type, :size, :weight, :height, :width, :length)");
+        $runQuery = $this->conn->prepare("INSERT INTO $this->table (sku, name, price, type) VALUES (:sku, :name, :price, :type)");
         $runQuery->bindParam(':sku', $sku);
         $runQuery->bindParam(':name', $name);
         $runQuery->bindParam(":price", $price);
         $runQuery->bindParam(":type", $type);
-        $runQuery->bindParam(":size", $size);
-        $runQuery->bindParam(":weight", $weight);
-        $runQuery->bindParam(":height", $height);
-        $runQuery->bindParam(":width", $width);
-        $runQuery->bindParam(":length", $length);
+        if ($runQuery->execute()) {
+            return $this->specificType($sku, $type, $size, $height, $width, $length, $weight);
+        }
+        return false;
+    }
+
+    // Insert into specific type table
+    public function specificType($sku, $type, $size = null, $height = null, $width = null, $length = null, $weight = null)
+    {
+        switch ($type) {
+            case 'DVD':
+                $query = "INSERT INTO dvd (sku, size) VALUES (:sku, :size)";
+                $runQuery = $this->conn->prepare($query);
+                $runQuery->bindParam(':sku', $sku);
+                $runQuery->bindParam(':size', $size);
+                break;
+
+            case 'Furniture':
+                $query = "INSERT INTO furniture (sku, height, width, length) VALUES (:sku, :height, :width, :length)";
+                $runQuery = $this->conn->prepare($query);
+                $runQuery->bindParam(':sku', $sku);
+                $runQuery->bindParam(':height', $height);
+                $runQuery->bindParam(':width', $width);
+                $runQuery->bindParam(':length', $length);
+                break;
+
+            case 'Book':
+                $query = "INSERT INTO book (sku, weight) VALUES (:sku, :weight)";
+                $runQuery = $this->conn->prepare($query);
+                $runQuery->bindParam(':sku', $sku);
+                $runQuery->bindParam(':weight', $weight);
+                break;
+
+            default:
+                return false;
+        }
         return $runQuery->execute();
     }
 

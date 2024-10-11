@@ -3,7 +3,7 @@
         <h1>Product List</h1>
         <div>
             <a href="/scandiwebTask/public/product/create" class="btn btn-primary">ADD</a>
-            <button type="submit" class="btn btn-danger" id="delete-product-btn">MASS DELETE</button>
+            <button type="submit" class="btn btn-danger">MASS DELETE</button>
         </div>
     </div>
     <hr>

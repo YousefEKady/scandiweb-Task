@@ -25,7 +25,6 @@ class ProductController
 
     public function store()
     {
-        // Handle form submission
         $request = new Request();
         $validation = new Validation();
         $session = new Session();
@@ -45,12 +44,11 @@ class ProductController
         $length = $request->filter($request->post("length"));
         $weight = $request->filter($request->post("weight"));
 
-        // Validation
+        // Validation rules
         $validation->endValidate("sku", $sku, ["Required"]);
         $validation->endValidate("name", $name, ["Required", "Str"]);
         $validation->endValidate("price", $price, ["Required"]);
         $validation->endValidate("type", $type, ["Required"]);
-
         if ($type === "DVD") {
             $validation->endValidate("size", $size, ["Required"]);
         } elseif ($type === "Furniture") {
@@ -61,17 +59,17 @@ class ProductController
             $validation->endValidate("weight", $weight, ["Required"]);
         }
 
-        // Gather any validation errors
+        // Collect any validation errors
         $errors = $validation->getError();
 
+        // Check if the SKU is unique
         if (!$productModel->isSkuUnique($sku)) {
             $errors[] = "SKU '$sku' already exists. Please choose a different SKU.";
         }
 
-        // If there are no errors, proceed to create the product
         if (empty($errors)) {
             // Create the product
-            $productModel->createProduct($sku, $name, $price, $type, $size, $weight, $height, $width, $length);
+            $productModel->createProduct($sku, $name, $price, $type, $size, $height, $width, $length, $weight);
             $request->headerLocation("/scandiwebTask/public/product/index");
             exit;
         } else {
@@ -80,6 +78,7 @@ class ProductController
             exit;
         }
     }
+
 
     public function delete()
     {
